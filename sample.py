@@ -13,23 +13,23 @@ def print_country(country):
     print(a)
 
 
-    # for language in str(country.Languages).splitlines():
-    #     language = language.strip()
-    #     try:
-    #         if language[0:2] == "sI":
-    #             temp = []
-    #             temp.append(language.split("=", maxsplit=1)[-1].replace("\"", "").strip())
-    #         if language[0:2] == "sN":
-    #             temp.append(language.split("=", maxsplit=1)[-1].replace("\"", "").strip())
-    #             for i in range(0, len(temp), 2):
-    #                 country_output = country_output + temp[i+1] + " (" + temp[i] + "), "
-    #     except IndexError:
-    #         country_output = country_output + "N/A"
-    # country_output = country_output[:-2]
-    # print(country_output)
-    # return country_output
+    for language in str(country.Languages).splitlines():
+        language = language.strip()
+        try:
+            if language[0:2] == "sI":
+                temp = []
+                temp.append(language.split("=", maxsplit=1)[-1].replace("\"", "").strip())
+            if language[0:2] == "sN":
+                temp.append(language.split("=", maxsplit=1)[-1].replace("\"", "").strip())
+                for i in range(0, len(temp), 2):
+                    country_output = country_output + temp[i+1] + " (" + temp[i] + "), "
+        except IndexError:
+            country_output = country_output + "N/A"
+    country_output = country_output[:-2]
+    print(country_output)
+    return country_output
 
-    
+
 
 import json
 from suds.client import Client
