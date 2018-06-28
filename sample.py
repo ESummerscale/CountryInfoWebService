@@ -8,51 +8,42 @@ def print_country(country):
     except TypeError:
         country_output = country_output + "|" + "None" + "|"
 
-    languages = str(country.Languages)
-    a = json.loads(languages)
-    print(a)
-
-
+    languages = []
     for language in str(country.Languages).splitlines():
         language = language.strip()
-        try:
-            if language[0:2] == "sI":
-                temp = []
-                temp.append(language.split("=", maxsplit=1)[-1].replace("\"", "").strip())
-            if language[0:2] == "sN":
-                temp.append(language.split("=", maxsplit=1)[-1].replace("\"", "").strip())
-                for i in range(0, len(temp), 2):
-                    country_output = country_output + temp[i+1] + " (" + temp[i] + "), "
-        except IndexError:
-            country_output = country_output + "N/A"
+        if language[0:2] == "sI":
+            languages.append(language.split("=", maxsplit=1)[-1].replace("\"", "").strip())
+    for term in languages:
+       country_output = country_output + client.service.LanguageName(term) + " (" + term + "), "
     country_output = country_output[:-2]
-    print(country_output)
     return country_output
 
 
-
 import json
+import csv
 from suds.client import Client
-from collections import defaultdict
-country_big_list = []
-country_dictionary = defaultdict(list)
-country_info_list = []
-languages_list = []
+with open("country_info.csv", "w"):
+    pass
 
-
-individual_country_list = []
-count = 0
 url = "http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso?WSDL"
 client = Client(url)
 
 country_info = generate_full_country_info()
+with open("country_info.csv", "a") as f:
+    for country in country_info[0]:
+        if country == country_info[0][-1]:
+            f.write(print_country(country)) 
+        else:
+            f.write(print_country(country) + "\n")
 
-for country in country_info[0]:
-    country_info_list.append(print_country(country))
-# with open("country_info.csv", "w") as f:
-#     for country in country_info_list:
-#         f.write(country + "\n")
 
+ #------------------------------
+# individual_country_list = []
+# from collections import defaultdict
+# country_big_list = []
+# country_dictionary = defaultdict(list)
+# country_info_list = []
+# languages_list = []
 
 # country_info_list = str(country_info).split("(tCountryInfo)")
 # for country in country_info_list:
