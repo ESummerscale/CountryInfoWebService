@@ -1,14 +1,15 @@
 from suds.client import Client
+import sys
 from suds.transport import TransportError
-
+from urllib.error import HTTPError
 def get_full_country_list():
-    url = "http://webservices.oorsprong.org/websamples.countryinfo/.wso?WSDL"
+    url = "http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso?WSDL"
     try:
         client = Client(url)
         countries_result = client.service.FullCountryInfoAllCountries()
-        return countries_result[0]
-    except TransportError:
+    except (HTTPError, TransportError):
         raise WebServiceError("Web service " + url + " is not available or returns error")
+    return countries_result[0]
 
 def print_country(country):
     country_output = country.sISOCode + "|" + country.sName + "|" + country.sCapitalCity + "|" + country.sPhoneCode + "|" + country.sContinentCode
@@ -33,7 +34,11 @@ class WebServiceError(Error):
         self.msg = msg
 
 country_list = get_full_country_list()
-country_list_output = '\n'.join(print_country(country) for country in country_list)
-
-with open("country_info.csv", "w") as f:
-    f.write(country_list_output)
+try:
+    country_list_output = '\n'.join(print_country(country) for country in country_list)
+except TypeError:
+    sys.tracebacklimit = 0
+    raise(country_list)
+else:
+    with open("country_info.csv", "w") as f:
+        f.write(country_list_output)
